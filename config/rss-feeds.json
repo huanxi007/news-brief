@@ -1,0 +1,156 @@
+{
+  "_meta": {
+    "skill": "news-brief",
+    "note": "新闻简报 skill 自带信源配置（金融/三地/大学艺术）。金融的财联社/格隆汇/Bloomberg 走 自托管 RSSHub（域名与 ACCESS_KEY 均运行时注入，不入库）；财新/华尔街见闻/人民日报走 anyfeeder；其余直连 RSS。"
+  },
+  "news_feeds": {
+    "_note": "新闻简报模块专用源（金融/三地/大学艺术）。走 scripts/news-brief.py 出每日简报，不写入 inbox 知识库，与上方 feeds 知识流隔离。已逐个 RSS 实测可抓（2026-06-15）。",
+    "_金融说明": "财联社/格隆汇/Bloomberg 走自托管 RSSHub。域名与密钥均不写入本文件：运行时由环境变量 RSSHUB_BASE / RSSHUB_KEY（或本地 ~/JoyClaw/.rsshub-base / .rsshub-access-key 文件）注入；未配置则这几个源自动跳过，公共源照常。",
+    "金融": [
+      {
+        "name": "财联社电报",
+        "url": "${RSSHUB_BASE}/cls/telegraph?key=${RSSHUB_KEY}"
+      },
+      {
+        "name": "格隆汇",
+        "url": "${RSSHUB_BASE}/gelonghui/home?key=${RSSHUB_KEY}"
+      },
+      {
+        "name": "财新",
+        "url": "https://plink.anyfeeder.com/weixin/caixinwang"
+      },
+      {
+        "name": "华尔街见闻",
+        "url": "https://plink.anyfeeder.com/weixin/wallstreetcn"
+      },
+      {
+        "name": "Bloomberg",
+        "url": "${RSSHUB_BASE}/bloomberg?key=${RSSHUB_KEY}"
+      },
+      {
+        "name": "FT 全球",
+        "url": "https://www.ft.com/world?format=rss"
+      },
+      {
+        "name": "WSJ 市场",
+        "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml"
+      },
+      {
+        "name": "CNBC 财经",
+        "url": "https://www.cnbc.com/id/10000664/device/rss/rss.html"
+      }
+    ],
+    "三地": {
+      "香港": [
+        {
+          "name": "信报",
+          "url": "https://news.google.com/rss/search?q=site%3Awww2.hkej.com%20when%3A3d&hl=zh-HK&gl=HK&ceid=HK:zh"
+        },
+        {
+          "name": "RTHK·本地",
+          "url": "https://rthk9.rthk.hk/rthk/news/rss/c_expressnews_clocal.xml"
+        },
+        {
+          "name": "RTHK·大中华",
+          "url": "https://rthk9.rthk.hk/rthk/news/rss/c_expressnews_greaterchina.xml"
+        },
+        {
+          "name": "南华早报·港闻",
+          "url": "https://www.scmp.com/rss/91/feed"
+        }
+      ],
+      "中国": [
+        {
+          "name": "人民日报",
+          "url": "https://plink.anyfeeder.com/weixin/rmrbwx"
+        },
+        {
+          "name": "人民日报要闻",
+          "url": "https://plink.anyfeeder.com/people-daily"
+        },
+        {
+          "name": "中新网·滚动",
+          "url": "http://www.chinanews.com.cn/rss/scroll-news.xml"
+        }
+      ],
+      "世界": [
+        {
+          "name": "BBC World",
+          "url": "https://feeds.bbci.co.uk/news/world/rss.xml"
+        },
+        {
+          "name": "Al Jazeera",
+          "url": "https://www.aljazeera.com/xml/rss/all.xml"
+        }
+      ]
+    },
+    "大学艺术": {
+      "大学": [
+        {
+          "name": "哈佛",
+          "url": "https://news.harvard.edu/gazette/feed/"
+        },
+        {
+          "name": "耶鲁",
+          "url": "https://news.google.com/rss/search?q=site%3Anews.yale.edu%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
+        },
+        {
+          "name": "普林斯顿",
+          "url": "https://paw.princeton.edu/rss.xml"
+        },
+        {
+          "name": "斯坦福",
+          "url": "https://news.google.com/rss/search?q=site%3Anews.stanford.edu%20when%3A7d&hl=en-US&gl=US&ceid=US:en"
+        },
+        {
+          "name": "MIT",
+          "url": "https://news.mit.edu/rss/feed"
+        },
+        {
+          "name": "加州理工",
+          "url": "https://www.caltech.edu/news/rss.xml"
+        },
+        {
+          "name": "剑桥",
+          "url": "https://www.cam.ac.uk/news/feed"
+        }
+      ],
+      "艺术": [
+        {
+          "name": "The Art Newspaper",
+          "url": "https://www.theartnewspaper.com/rss.xml"
+        },
+        {
+          "name": "ARTnews",
+          "url": "https://www.artnews.com/feed/"
+        },
+        {
+          "name": "Artsy",
+          "url": "https://www.artsy.net/rss/news"
+        },
+        {
+          "name": "Hyperallergic",
+          "url": "https://hyperallergic.com/feed/"
+        },
+        {
+          "name": "Colossal",
+          "url": "https://www.thisiscolossal.com/feed/"
+        }
+      ]
+    }
+  },
+  "pending_sources": {
+    "_note": "全网搜过仍无可达公开订阅，需自建（RSSHub/Wechat2RSS 实例）才能接入。",
+    "金融": [
+      "财联社(RSSHub /cls 路由存在,但公共实例 guidebook 等均不可达→需自建 RSSHub)",
+      "格隆汇(同财联社,/gelonghui 路由需自建实例)"
+    ],
+    "三地": [
+      "大公报(可同信报用 Google News site:takungpao.com 补,暂未加)",
+      "香港01(无公开RSS)"
+    ],
+    "大学": [
+      "牛津/哥大(暂未加,可同耶鲁斯坦福用 Google News 补)"
+    ]
+  }
+}
