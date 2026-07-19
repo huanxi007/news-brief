@@ -13,8 +13,16 @@ from datetime import datetime, timezone, timedelta
 
 SCRIPTS = Path(__file__).resolve().parent
 SKILL = SCRIPTS.parent
-JC = Path.home() / "JoyClaw"
-DB = (JC / "joy.db") if (JC / "joy.db").exists() else (SKILL / "data" / "joy.db")
+def _db():
+    try:
+        sys.path.insert(0, os.path.expanduser("~/.clacky/lib"))
+        import joy_env
+        return Path(joy_env.db_path())
+    except Exception:
+        pass
+    jc = Path.home() / "JoyClaw" / "joy.db"
+    return jc if jc.exists() else SKILL / "data" / "joy.db"
+DB = _db()
 
 ARGS = sys.argv[1:]
 HOURS = 48

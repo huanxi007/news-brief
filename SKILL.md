@@ -5,6 +5,8 @@ description: 新闻简报 — 输入一个领域（财经/科技/AI人物/三地
 
 # 新闻简报 · News Brief
 
+> 欢喜龙虾适配版 · 2026-07-19：RSSHub 域名/密钥经 joy_profile.yml 注入；joy.db 经 joy_env.db_path() 解析（表缺失自建）；全部路径新老用户自适应。
+
 **输入一个领域 → 当天最重要 5 条、每条约 200 字（发生什么→背景/数据→对你意味着什么）→ 一流苹果大片风 PNG（朋友圈可发）。**
 
 引擎哲学：**引擎 = 对话 agent 本身**。由执行本 skill 的 Opus 4.8 亲自读素材、选要闻、写简报，脚本只负责抓取与渲染。零 API key、私密数据不出本地。
@@ -35,7 +37,7 @@ description: 新闻简报 — 输入一个领域（财经/科技/AI人物/三地
 
 2. **你亲写**：从素材里选当天最重要的 **5 条**，每条写约 **200 字**——结构「发生了什么 → 关键背景/数据 → 对读者意味着什么」。要求：客观、信息密度高、不空话套话、**只用素材不编造**、**覆盖尽量多个不同来源**。
    **再写一段「朋友圈配文」**（见下方规范）——这是图文一起发的「文」，让人看完就想转发朋友圈。
-   输出一个 JSON 对象存到 `~/JoyClaw/works/简报/<今日>/<模块>-stories.json`：
+   输出一个 JSON 对象存到 `~/JoyClaw/works/简报/<今日>/<模块>-stories.json`（无 `~/JoyClaw` 的新用户改存 `~/.clacky/joy_data/works/简报/<今日>/`）：
    ```json
    {
      "stories": [{"title":"精炼标题≤18字","source":"来源名","body":"约200字正文","ref":原文编号}],
@@ -59,7 +61,7 @@ python3 <SKILL>/scripts/ai-figure-fetch.py --hours 72
 
 **Step C — 亲写 + 写 JSON**：
 从素材 + 网络搜索结果中精选 5 条最重要动态（优先覆盖多个不同人物/公司），每条约 **200-300 字**。AI人物 简报的信息密度应高于通用模块——要有观点、有判断、有「所以呢」，不只是复述推文。
-JSON 存到 `~/JoyClaw/works/简报/<今日>/AI人物-stories.json`，格式同上。`ref` 字段填素材编号（1-based）。
+JSON 存到 `~/JoyClaw/works/简报/<今日>/AI人物-stories.json`（新用户同上改存 `~/.clacky/joy_data/works/简报/<今日>/`），格式同上。`ref` 字段填素材编号（1-based）。
 
 **Step D — 渲染出图**：
 ```bash
@@ -98,7 +100,7 @@ agent 不在场（cron 触发）时，跳过第 2 步，直接让脚本用本地
 | 大学艺术 | 哈/耶/普/斯/麻 · 加州理工 · 剑桥 ｜ The Art Newspaper · ARTnews · Artsy · Hyperallergic · Colossal |
 | AI人物 | follow-builders 精选 ~26 位一流 builder |
 
-> 财联社/格隆汇/Bloomberg 经自托管 RSSHub——域名与密钥均不入库，运行时由环境变量 `RSSHUB_BASE` / `RSSHUB_KEY`（或本地 `~/JoyClaw/.rsshub-base` / `.rsshub-access-key` 文件）注入，未配置则自动跳过；财新/华尔街见闻/人民日报经 anyfeeder；耶鲁/斯坦福/信报经 Google News RSS。配置全在自带 `config/rss-feeds.json`。
+> 财联社/格隆汇/Bloomberg 经自托管 RSSHub——域名与密钥均不入库，运行时按「环境变量 → `~/.clacky/joy_profile.yml`（`rsshub_base` / `rsshub_key` 两键）→ `~/JoyClaw` 或 `~/.clacky` 下的 `.rsshub-base` / `.rsshub-access-key` 文件」链路注入，未配置则自动跳过；财新/华尔街见闻/人民日报经 anyfeeder；耶鲁/斯坦福/信报经 Google News RSS。配置全在自带 `config/rss-feeds.json`。
 
 ## 设计语言
 **默认 = 苹果大片风**（融合 first-class-poster-design 的 Apple 风，accent 换 Cartier 红 #C0202C）：

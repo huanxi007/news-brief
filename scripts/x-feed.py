@@ -12,8 +12,26 @@ import sys, json, ssl, sqlite3, urllib.request
 from pathlib import Path
 
 FEED_URL = "https://raw.githubusercontent.com/zarazhangrui/follow-builders/main/feed-x.json"
-JC = Path.home() / "JoyClaw"
-DB = (JC / "joy.db") if (JC / "joy.db").exists() else (Path(__file__).resolve().parent.parent / "data" / "joy.db")
+def _db():
+    """欢喜龙虾单一权威解析：joy_env.db_path() → ~/JoyClaw/joy.db → skill 自带 data/"""
+    try:
+        import sys as _s, os as _o
+        _s.path.insert(0, _o.path.expanduser("~/.clacky/lib"))
+        import joy_env
+        return Path(joy_env.db_path())
+    except Exception:
+        pass
+    jc = Path.home() / "JoyClaw" / "joy.db"
+    return jc if jc.exists() else Path(__file__).resolve().parent.parent / "data" / "joy.db"
+DB = _db()
+
+def _ensure_schema(con):
+    con.execute("CREATE TABLE IF NOT EXISTS masters("
+                "id INTEGER PRIMARY KEY, name TEXT, title TEXT, x_handle TEXT)")
+    con.execute("CREATE TABLE IF NOT EXISTS master_intel("
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, master_id INTEGER, handle TEXT,"
+                "channel TEXT, title TEXT, url TEXT, content TEXT, summary TEXT,"
+                "published_at TEXT, created_at TEXT DEFAULT (datetime('now')))")
 DRY = "--dry" in sys.argv
 
 
@@ -35,14 +53,14 @@ def fetch_feed():
 
 
 def main():
-    if not DB.exists():
-        sys.exit(f"✗ 找不到 joy.db（{DB}）；AI人物 模块需要 masters/master_intel 表。")
+    DB.parent.mkdir(parents=True, exist_ok=True)
     feed = fetch_feed()
     people = feed.get("x", [])
     print(f"feed 生成于 {feed.get('generatedAt')} · {len(people)} 人 · "
           f"{sum(len(p.get('tweets', [])) for p in people)} 条推文")
 
     con = sqlite3.connect(DB)
+    _ensure_schema(con)
     # 建 handle→master_id 映射（小写匹配）
     id_by_handle = {}
     for mid, h in con.execute("SELECT id, lower(x_handle) FROM masters WHERE x_handle LIKE '@%'"):

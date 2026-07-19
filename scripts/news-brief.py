@@ -43,18 +43,29 @@ CAP = {"金融": 12, "香港": 6, "中国": 6, "世界": 6, "大学": 6, "艺术
 
 
 # ── RSSHub 域名与密钥：绝不焊死在 config，只从环境变量/本地 gitignored 文件解析 ──
-#    分发时由 joy_env / joy_profile 注入 RSSHUB_BASE / RSSHUB_KEY；
-#    本地回退读 ~/JoyClaw/.rsshub-base / .rsshub-access-key；
+#    注入链：环境变量 → joy_profile.yml(rsshub_base/rsshub_key) → ~/JoyClaw 或 ~/.clacky 下的本地文件；
 #    都没有 → 空串，那几个 RSSHub 源优雅跳过（公共源照常）。
 def _resolve_local(env_name, filename):
     v = os.environ.get(env_name, "").strip()
     if v:
         return v
-    f = Path.home() / "JoyClaw" / filename
+    # 欢喜龙虾：joy_profile.yml 注入（键名 rsshub_base / rsshub_key）
     try:
-        return f.read_text(encoding="utf-8").strip() if f.exists() else ""
+        sys.path.insert(0, os.path.expanduser("~/.clacky/lib"))
+        import joy_env
+        v = str(joy_env.profile().get(env_name.lower(), "") or "").strip()
+        if v:
+            return v
     except Exception:
-        return ""
+        pass
+    for base in (Path.home() / "JoyClaw", Path.home() / ".clacky"):
+        f = base / filename
+        try:
+            if f.exists():
+                return f.read_text(encoding="utf-8").strip()
+        except Exception:
+            pass
+    return ""
 RSSHUB_KEY = _resolve_local("RSSHUB_KEY", ".rsshub-access-key")
 RSSHUB_BASE = _resolve_local("RSSHUB_BASE", ".rsshub-base").rstrip("/")
 
@@ -63,7 +74,7 @@ def fetch(feed):
     """抓单个源 → [(title, source, link, summary, ts)]"""
     name, url = feed["name"], feed["url"]
     if "${RSSHUB_BASE}" in url and not RSSHUB_BASE:
-        return name, "SKIP(no RSSHUB_BASE)", out       # 未配置自托管 RSSHub → 跳过
+        return name, "SKIP(no RSSHUB_BASE)", []        # 未配置自托管 RSSHub → 跳过
     url = url.replace("${RSSHUB_BASE}", RSSHUB_BASE)   # 占位符 → 运行时域名
     url = url.replace("${RSSHUB_KEY}", RSSHUB_KEY)     # 占位符 → 运行时密钥
     out = []

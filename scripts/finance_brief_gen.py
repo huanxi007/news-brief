@@ -25,11 +25,13 @@ def _ssl_ctx():
         return ssl._create_unverified_context()
 
 HOME = os.path.expanduser("~")
-FETCH = os.path.join(HOME, ".clacky/skills/news-brief/scripts/news-brief.py")
+FETCH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "news-brief.py")
 CONFIG = os.path.join(HOME, ".clacky/config.yml")
 TODAY = datetime.date.today().strftime("%Y-%m-%d")
 WEEKDAY = "一二三四五六日"[datetime.date.today().weekday()]
-OUTDIR = os.path.join(HOME, "JoyClaw/01-信息箱/简报", TODAY)
+_ROOT = os.path.join(HOME, "JoyClaw/01-信息箱/简报") if os.path.isdir(os.path.join(HOME, "JoyClaw")) \
+    else os.path.join(HOME, ".clacky/joy_data/01-信息箱/简报")
+OUTDIR = os.path.join(_ROOT, TODAY)
 OUTMD = os.path.join(OUTDIR, "finance_brief.md")
 OUTJSON = os.path.join(OUTDIR, "source.json")
 
